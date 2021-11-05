@@ -1,2 +1,2 @@
-# template_node
-Template ROS node that can be easily modified into a full-fledged CyberKnights ROS node.
+# Template Node
+This template ROS node is designed as a starting point for creating a standard ROS node.
