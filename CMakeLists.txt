@@ -217,15 +217,9 @@ file(GLOB_RECURSE executable_sources CONFIGURE_DEPENDS RELATIVE "${PROJECT_SOURC
      "*.cpp"
 )
 convert_absolute_path(executable_sources "src")
-message("####################################################")
-message("Executable headers glob")
-# message(${executable_headers})
-message("Executable sources glob")
-message(${executable_sources})
-message("####################################################")
 
-file(GLOB test_sources CONFIGURE_DEPENDS
-     "test/*.cpp"
+file(GLOB_RECURSE executable_sources CONFIGURE_DEPENDS RELATIVE "${PROJECT_SOURCE_DIR}/test"
+     "*.cpp"
 )
 
 add_executable(${PROJECT_NAME} ${executable_sources} ${executable_headers})

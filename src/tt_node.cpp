@@ -25,8 +25,6 @@ int main(int argc, char **argv)
 
 	node = &n;
 
-	initMotorConfig();
-
 	ros::spin();
 	return 0;
 }
