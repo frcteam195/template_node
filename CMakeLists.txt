@@ -200,39 +200,25 @@ message("CATKIN INCLUDES:${catkin_INCLUDE_DIRS}")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-macro(convert_absolute_path file_list path_prefix)
-  foreach(src_file ${${file_list}})
-    get_filename_component(src_file_path "${path_prefix}/${src_file}" ABSOLUTE)
-    list(REMOVE_ITEM ${file_list} "${src_file}")
-    list(APPEND ${file_list} "${src_file_path}")
-  endforeach()
-endmacro()
-
-file(GLOB_RECURSE executable_sources CONFIGURE_DEPENDS RELATIVE "${PROJECT_SOURCE_DIR}/src"
-     "*.cpp"
+file(GLOB_RECURSE executable_sources CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/src/*.cpp"
 )
-convert_absolute_path(executable_sources "src")
 
-file(GLOB_RECURSE test_sources CONFIGURE_DEPENDS RELATIVE "${PROJECT_SOURCE_DIR}/test/src"
-     "*.cpp"
+file(GLOB_RECURSE test_sources CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/test/src/*.cpp"
 )
-convert_absolute_path(test_sources "test/src")
 
 add_executable(${PROJECT_NAME} ${executable_sources})
+set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS 1)
 target_include_directories(${PROJECT_NAME} PUBLIC "include")
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-
 #############
 ## Testing ##
 #############
-
-## Add gtest based cpp test target and link libraries.
-add_library(t${PROJECT_NAME} ${executable_sources})
-target_include_directories(t${PROJECT_NAME} PUBLIC "include")
-catkin_add_gtest(test_${PROJECT_NAME} ${test_sources})
-target_link_libraries(test_${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads t${PROJECT_NAME})
-target_include_directories(test_${PROJECT_NAME} PUBLIC "include")
-# target_include_directories(test_${PROJECT_NAME} PUBLIC "test/include")
-add_dependencies(test_${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+catkin_add_gtest(${PROJECT_NAME}-test ${test_sources})
+if(TARGET ${PROJECT_NAME}-test)
+  target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+  target_include_directories(${PROJECT_NAME}-test PUBLIC "include" "test/include")
+endif()
