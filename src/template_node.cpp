@@ -1,4 +1,4 @@
-#include "tt_node/tt_node.hpp"
+#include "template_node/template_node.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <array>
 
-#define NODE_NAME "tt_node"
+#define NODE_NAME "template_node"
 
 class LocalNode : public ParameterizedNode
 {
