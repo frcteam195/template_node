@@ -1,4 +1,6 @@
 #include "{{node_name}}/parameters.hpp"
+#include "ck_utilities_node/node_handle.hpp"
+rclcpp::Node* node_handle = nullptr;
 
 parameters_t Parameters;
 
@@ -15,5 +17,6 @@ void load_parameters(rclcpp::Node* node)
 
 ParameterizedNode::ParameterizedNode(std::string node_name) : rclcpp::Node(node_name)
 {
+    node_handle = this;
     load_parameters(this);
 }
