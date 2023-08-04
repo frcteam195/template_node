@@ -17,7 +17,7 @@ robot_name = ""
 
 for item in pathlib.Path.cwd().parent.iterdir():
     if item.is_dir():
-        if item.name.count("_Robot") > 0:
+        if item.name.endswith("_robot"):
             robot_name = str(item.resolve())
 
 if robot_name == "":
