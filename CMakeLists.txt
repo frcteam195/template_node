@@ -19,7 +19,17 @@ set(third_party_find_package_list
 set(ros_find_package_list
   rclcpp
   std_msgs
+  geometry_msgs
+  nav_msgs
+  tf2
+  tf2_eigen
+  tf2_ros
+  tf2_geometry_msgs
+  ck_ros2_msgs_node
   ck_ros2_base_msgs_node
+  ck_utilities_node
+  robot_localization
+  frc_robot_utilities_node
 )
 
 set(link_libraries
