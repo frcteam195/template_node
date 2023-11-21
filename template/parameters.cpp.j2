@@ -11,7 +11,7 @@ void load_parameters(rclcpp::Node* node)
 {% endfor %}
 
 {% for param_name,type in lang_types.items() %}
-    Parameters.{{param_name}} = node->get_parameter("{{param_name}}").get_value<{{type}}>();
+    Parameters.{{param_name.replace('__dyn', '')}} = node->get_parameter("{{param_name}}").get_value<{{type}}>();
 {% endfor %}
 }
 
@@ -19,4 +19,45 @@ ParameterizedNode::ParameterizedNode(std::string node_name) : rclcpp::Node(node_
 {
     node_handle = this;
     load_parameters(this);
+
+    auto on_set_callback = [](std::vector<rclcpp::Parameter> parameters)
+    {
+        rcl_interfaces::msg::SetParametersResult result;
+        result.successful = true;
+
+        for (const auto & param : parameters)
+        {
+{%for param_name, type in params.items() %}
+{% if not param_name.endswith('__dyn') %}
+            if (param.get_name() == "{{param_name}}")
+            {
+                result.successful = false;
+                result.reason = "Parameter '{{param_name}}' is not reconfigurable.";
+                break;
+            }
+{% endif %}
+{% endfor %}
+        }
+
+        return result;
+    };
+
+    auto post_set_callback = [this](const std::vector<rclcpp::Parameter>& parameters)
+    {
+        for (const auto & param : parameters)
+        {
+{% for param_name, type in params.items() %}
+{% if param_name.endswith('__dyn') %}
+            if (param.get_name() == "{{param_name}}")
+            {
+                Parameters.{{param_name.replace('__dyn', '')}} = param.get_value<{{type}}>();
+                RCLCPP_INFO(this->get_logger(), "Updated the value of '{{param_name}}'\n");
+            }
+{% endif %}
+{% endfor %}
+        }
+    };
+
+    on_set_handle_ = this->add_on_set_parameters_callback(on_set_callback);
+    post_set_handle_ = this->add_post_set_parameters_callback(post_set_callback);
 }
